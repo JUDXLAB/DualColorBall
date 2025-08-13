@@ -350,13 +350,20 @@ class App:
 
         def add_btn(text, cmd, accent=False):
             b = Win11Button(toolbar, text, cmd, accent=accent)
-            b.pack(side="left", padx=6)
+            b.pack(side="left", padx=4)
 
+        def add_sep():
+            tk.Frame(toolbar, width=14, bg=toolbar["bg"]).pack(side="left")
+
+        # 生成组
         add_btn("随机生成", self.gen_random, accent=True)
         add_btn("条件生成", self.open_cond_win)
+        add_sep()
+        # 收藏相关
         add_btn("收藏选中", self.collect_selected)
-        add_btn("删除选中", self.delete_selected)
         add_btn("查看收藏", self.show_favorites)
+        add_sep()
+        # 开奖/对照
         add_btn("更新开奖号码", self.update_draw)
         add_btn("对照收藏", self.compare_favs)
 
@@ -381,6 +388,9 @@ class App:
             highlightbackground=WIN_BORDER
         )
         self.listbox.pack(side="left", fill="both", expand=True)
+        # 绑定删除快捷键
+        self.listbox.bind("<Delete>", self._on_delete_key)
+        self.listbox.bind("<BackSpace>", self._on_delete_key)
 
         # 自定义滚动条包一层使色块更自然
         sb_style = ttk.Style()
@@ -414,7 +424,7 @@ class App:
         self.listbox.delete(0, tk.END)
         for t in tickets:
             self.listbox.insert(tk.END, t.format())
-        self.set_status("生成 5 组随机号码")
+        self.set_status("生成 5 组随机号码 (按 Delete 删除选中)")
         self.current_mode = "generated"
 
     def open_cond_win(self):
@@ -517,7 +527,7 @@ class App:
         self.listbox.delete(0, tk.END)
         for f in favs:
             self.listbox.insert(tk.END, f.format())
-        self.set_status(f"收藏 {len(favs)} 条")
+        self.set_status(f"收藏 {len(favs)} 条 (按 Delete 删除选中)")
         self.current_mode = "favorites"
 
     def update_draw(self):
@@ -605,6 +615,10 @@ class App:
             self.set_status("已删除: " + ticket_fmt)
         else:
             self.set_status("未找到匹配记录 (可能已删除)")
+
+    def _on_delete_key(self, event):
+        if self.current_mode in ("favorites", "history", "compare", "generated"):
+            self.delete_selected()
 
 def main():
     enable_dpi_awareness()
