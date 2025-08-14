@@ -304,7 +304,7 @@ class App:
         print("[DEBUG] App.__init__ in file:", __file__)
         print("[DEBUG] Before setting self.root, has attr root?", hasattr(self, "root"))
         self.root = root  # 确保最早赋值
-        root.title("双色球工具 (Win11)")
+        root.title("双色球号码生成 - JUDXLAB")
         # 使用改进后的 _center（即使 self.root 未成功赋值也能 fallback）
         root.geometry(self._center(820, 600))
         root.configure(bg=WIN_BG)
